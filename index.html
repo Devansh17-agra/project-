@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PathFinder Pro | Career Path Selection System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    /* ==========================================================================
+       🎨 MEMBER 2: UI/UX & GLOBAL DESIGN SYSTEM (Colors, Typography, Layout)
+       ========================================================================== */
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #111827;
+      --bg-card: rgba(30, 41, 59, 0.65);
+      --bg-card-hover: rgba(30, 41, 59, 0.95);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border-color: rgba(148, 163, 184, 0.15);
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --shadow-glow: 0 10px 30px -10px rgba(99, 102, 241, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 35%);
+    }
+
+    h1, h2, h3, h4, .brand-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    section {
+      padding: 90px 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 56px;
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #818cf8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+
+    .gradient-text {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px -8px rgba(99, 102, 241, 0.55);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-secondary);
+      background: rgba(6, 182, 212, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      padding: 9px 18px;
+      font-size: 0.88rem;
+    }
+
+    /* ==========================================================================
+       👑 MEMBER 1: NAVIGATION & SYSTEM ARCHITECTURE
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      font-size: 1.45rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-main);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       🎨 MEMBER 2: HERO & ABOUT SECTIONS
+       ========================================================================== */
+    .hero {
+      padding: 85px 0 70px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 4.8vw, 3.7rem);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero-description {
+      font-size: 1.12rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      max-width: 580px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .stat-item h4 {
+      font-size: 1.65rem;
+      color: var(--text-main);
+    }
+
+    .stat-item p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .hero-visual-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .visual-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .window-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .preview-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-bar-item {
+      background: rgba(15, 23, 42, 0.7);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .preview-bar-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+
+    /* About Grid */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(99, 102, 241, 0.45);
+      background: var(--bg-card-hover);
+    }
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    /* ==========================================================================
+       💻 MEMBER 3: CAREER ASSESSMENT & QUESTIONNAIRE STYLES
+       ========================================================================== */
+    .assessment-wrapper {
+      max-width: 880px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      backdrop-filter: blur(12px);
+    }
+
+    .quiz-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-progress-info {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--accent-secondary);
+    }
+
+    .quiz-progress-bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-gradient);
+      transition: width 0.35s ease;
+    }
+
+    .question-block {
+      margin-bottom: 28px;
+      padding: 24px;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .question-block.unanswered-error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .q-number {
+      background: var(--accent-gradient);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .question-title {
+      font-size: 1.08rem;
+      font-weight: 600;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.55);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.93rem;
+    }
+
+    .option-label:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--accent-primary);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .option-label.selected {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: var(--accent-primary);
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .validation-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+      margin-bottom: 20px;
+      font-size: 0.93rem;
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    /* ==========================================================================
+       🚀 MEMBER 4: RECOMMENDATIONS, CAREER DETAILS & ROADMAP STYLES
+       ========================================================================== */
+    .recommendation-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+    }
+
+    .rec-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .top-match-card {
+      background: linear-gradient(145deg, rgba(99, 102, 241, 0.16), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+
+    .match-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--success);
+      color: #052e16;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 5px 13px;
+      border-radius: 99px;
+      margin-bottom: 16px;
+    }
+
+    .top-match-title {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .score-breakdown-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+    }
+
+    .score-row {
+      margin-bottom: 16px;
+    }
+
+    .score-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .score-row-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    /* Career Details Catalog & Filter Tabs */
+    .career-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .tab-btn {
+      padding: 11px 20px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .career-detail-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 24px;
+    }
+
+    .tag {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.14);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      font-size: 0.85rem;
+      color: #c7d2fe;
+      font-weight: 500;
+    }
+
+    .role-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+    }
+
+    .role-list li i {
+      color: var(--accent-secondary);
+    }
+
+    /* Roadmap Timeline */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .roadmap-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .roadmap-step:hover {
+      border-color: var(--accent-secondary);
+      transform: translateY(-4px);
+    }
+
+    .step-number {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-secondary);
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .roadmap-step h4 {
+      font-size: 1.18rem;
+      margin-bottom: 12px;
+    }
+
+    .roadmap-step ul li {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .roadmap-step ul li i {
+      color: var(--success);
+      margin-top: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* ==========================================================================
+       🧪 MEMBER 5: QA STATUS, TEAM ALLOCATION & CONTACT SECTION
+       ========================================================================== */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 18px;
+      margin-bottom: 56px;
+    }
+
+    .team-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .team-role-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .team-card h4 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .team-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .toast-msg {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--success);
+      color: #6ee7b7;
+      margin-top: 16px;
+      font-size: 0.92rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ==========================================================================
+       📱 RESPONSIVE BREAKPOINTS (Mobile, Tablet, Desktop)
+       ========================================================================== */
+    @media (max-width: 960px) {
+      .hero-grid,
+      .rec-grid,
+      .career-detail-panel,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        flex-direction: column;
+        padding: 24px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 600px) {
+      section {
+        padding: 64px 0;
+      }
+      .assessment-wrapper,
+      .recommendation-box,
+      .career-detail-panel,
+      .contact-grid {
+        padding: 22px;
+      }
+      .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       👑 MEMBER 1: COMMON NAVIGATION BAR
+       ========================================================================== -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="brand-logo">
+        <span class="brand-icon"><i class="fa-solid fa-compass-drafting"></i></span>
+        <span>PathFinder<span class="gradient-text">Pro</span></span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#home" class="active">1. Home</a>
+        <a href="#about">2. About</a>
+        <a href="#assessment">3. Assessment</a>
+        <a href="#recommendations">4. Recommendations</a>
+        <a href="#details">5. Career Details</a>
+        <a href="#roadmap">6. Roadmap</a>
+        <a href="#contact">7. Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       🎨 MEMBER 2: SECTION 1 – HOME & HERO SECTION
+       ========================================================================== -->
+  <section id="home" class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="section-badge">
+          <i class="fa-solid fa-sparkles"></i> Intelligent Career Discovery Platform
+        </span>
+        <h1 class="hero-title">
+          Discover the Ideal <span class="gradient-text">Career Path</span> Built Around Your Strengths
+        </h1>
+        <p class="hero-description">
+          Unsure which specialization fits your future? Take our interactive skill & interest assessment to unlock data-backed career recommendations, role insights, and step-by-step learning roadmaps.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#assessment" class="btn btn-primary">
+            <i class="fa-solid fa-rocket"></i> Find Your Career Path
+          </a>
+          <a href="#details" class="btn btn-outline">
+            <i class="fa-solid fa-layer-group"></i> Explore 6 Career Domains
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h4>6+ Domains</h4>
+            <p>High-Demand Tech & Business Tracks</p>
+          </div>
+          <div class="stat-item">
+            <h4>8 Dimensions</h4>
+            <p>Interest, Aptitude & Preference Scoring</p>
+          </div>
+          <div class="stat-item">
+            <h4>100% Free</h4>
+            <p>Instant Personalized Learning Roadmaps</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Live Match Preview Card -->
+      <div class="hero-visual-card">
+        <div class="visual-header">
+          <div class="window-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+          <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            LIVE SCORING ENGINE PREVIEW
+          </span>
+        </div>
+
+        <div class="preview-bars">
+          <div class="preview-bar-item">
+            <div class="preview-bar-top">
+              <span><i class="fa-solid fa-code" style="color:#818cf8; margin-right:6px;"></i> Software Development</span>
+              <span style="color:#10b981;">94% Match</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 94%;"></div></div>
+          </div>
+
+          <div class="preview-bar-item">
+            <div class="preview-bar-top">
+              <span><i class="fa-solid fa-brain" style="color:#06b6d4; margin-right:6px;"></i> Data Science & AI</span>
+              <span style="color:#06b6d4;">86% Match</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 86%;"></div></div>
+          </div>
+
+          <div class="preview-bar-item">
+            <div class="preview-bar-top">
+              <span><i class="fa-solid fa-pen-ruler" style="color:#f472b6; margin-right:6px;"></i> UI/UX Product Design</span>
+              <span style="color:#94a3b8;">78% Match</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 78%;"></div></div>
+          </div>
+
+          <div class="preview-bar-item">
+            <div class="preview-bar-top">
+              <span><i class="fa-solid fa-shield-halved" style="color:#f59e0b; margin-right:6px;"></i> Cybersecurity</span>
+              <span style="color:#94a3b8;">71% Match</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: 71%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       🎨 MEMBER 2: SECTION 2 – ABOUT THE SYSTEM
+       ========================================================================== -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-circle-info"></i> About The System</span>
+        <h2 class="section-title">How <span class="gradient-text">PathFinder Pro</span> Empowers Students</h2>
+        <p class="section-subtitle">
+          Designed to bridge the gap between academic learning and industry expectations through structured self-assessment and actionable career roadmaps.
+        </p>
+      </div>
+
+      <div class="about-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+          <h3>1. Interest & Skill Mapping</h3>
+          <p>Evaluates your favorite subjects, problem-solving style, and cognitive preferences through a multi-dimensional questionnaire.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-microchip"></i></div>
+          <h3>2. Weighted Scoring Engine</h3>
+          <p>Uses JavaScript decision logic to calculate affinity scores across Software, Data Science, Cybersecurity, UI/UX, Business, and Marketing.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <h3>3. Deep Career Insights</h3>
+          <p>Provides transparent breakdowns of job roles, required technical qualifications, core tools, and industry salary expectations.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-route"></i></div>
+          <h3>4. Actionable Roadmaps</h3>
+          <p>Guides students from beginner fundamentals to capstone projects and industry certifications with curated course tracks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       💻 MEMBER 3: SECTION 3 – CAREER ASSESSMENT & QUESTIONNAIRE
+       ========================================================================== -->
+  <section id="assessment">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-clipboard-check"></i> Career Assessment</span>
+        <h2 class="section-title">Interactive <span class="gradient-text">Skill & Interest</span> Questionnaire</h2>
+        <p class="section-subtitle">
+          Answer all 6 questions honestly based on your natural strengths and preferences. Your responses are analyzed in real time.
+        </p>
+      </div>
+
+      <div class="assessment-wrapper">
+        <div class="quiz-top-bar">
+          <span class="quiz-progress-info" id="progressText">0 of 6 Questions Answered (0%)</span>
+          <button type="button" class="btn btn-outline btn-sm" id="demoFillBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fill Sample Answers
+          </button>
+        </div>
+
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="progressBarFill"></div>
+        </div>
+
+        <div class="validation-banner" id="quizErrorBanner">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span id="quizErrorText">Please answer all highlighted questions before generating your career recommendation.</span>
+        </div>
+
+        <form id="careerQuizForm" novalidate>
+          <div id="questionsContainer">
+            <!-- Dynamically injected by Member 3 JavaScript module -->
+          </div>
+
+          <div class="quiz-actions">
+            <button type="button" class="btn btn-outline" id="resetQuizBtn">
+              <i class="fa-solid fa-rotate-left"></i> Reset Answers
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-chart-pie"></i> Analyze & Recommend Career Path
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       🚀 MEMBER 4: SECTION 4 – CAREER RECOMMENDATIONS
+       ========================================================================== -->
+  <section id="recommendations">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-award"></i> Personalized Results</span>
+        <h2 class="section-title">Your <span class="gradient-text">Career Recommendation</span> Report</h2>
+        <p class="section-subtitle">
+          Based on your questionnaire responses, here is your primary career match along with your compatibility across all 6 domains.
+        </p>
+      </div>
+
+      <div class="recommendation-box" id="recommendationOutput">
+        <!-- Populated dynamically by Member 4 JS engine -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       🚀 MEMBER 4: SECTION 5 – CAREER DETAILS EXPLORER
+       ========================================================================== -->
+  <section id="details">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-book-open"></i> Career Encyclopedia</span>
+        <h2 class="section-title">In-Depth <span class="gradient-text">Career Details</span> & Qualifications</h2>
+        <p class="section-subtitle">
+          Select any career category below to inspect required skills, academic qualifications, job opportunities, and average compensation.
+        </p>
+      </div>
+
+      <div class="career-tabs" id="careerDetailTabs">
+        <!-- Tabs generated by JS -->
+      </div>
+
+      <div class="career-detail-panel" id="careerDetailContent">
+        <!-- Detail panel populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       🚀 MEMBER 4: SECTION 6 – SKILLS & LEARNING ROADMAP
+       ========================================================================== -->
+  <section id="roadmap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-map-location-dot"></i> Learning Pathways</span>
+        <h2 class="section-title">Step-by-Step <span class="gradient-text">Skills & Learning</span> Roadmap</h2>
+        <p class="section-subtitle">
+          Follow a structured 4-stage progression from foundational concepts to industry-ready portfolio projects and suggested courses.
+        </p>
+      </div>
+
+      <div class="career-tabs" id="roadmapTabs">
+        <!-- Tabs synced with Career Details -->
+      </div>
+
+      <div id="roadmapContent">
+        <!-- 4-Stage Roadmap + Courses injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       🧪 MEMBER 5 & 👑 MEMBER 1: SECTION 7 – TEAM ALLOCATION & CONTACT US
+       ========================================================================== -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-users-gear"></i> Project Team & Support</span>
+        <h2 class="section-title">Team Task Allocation & <span class="gradient-text">Contact Us</span></h2>
+        <p class="section-subtitle">
+          Built collaboratively by our 5-member engineering team. Have questions or need career counseling guidance? Reach out below.
+        </p>
+      </div>
+
+      <!-- 5 Team Members Showcase -->
+      <div class="team-grid">
+        <div class="team-card">
+          <span class="team-role-badge">👑 Member 1</span>
+          <h4>Team Lead & Integration</h4>
+          <p>GitHub repository management, branch integration, merge conflict resolution & system architecture.</p>
+        </div>
+        <div class="team-card">
+          <span class="team-role-badge">🎨 Member 2</span>
+          <h4>UI/UX & Home Page Dev</h4>
+          <p>Hero section, responsive grid layouts, color theme, typography & consistent component styling.</p>
+        </div>
+        <div class="team-card">
+          <span class="team-role-badge">💻 Member 3</span>
+          <h4>Assessment Developer</h4>
+          <p>Questionnaire design, DOM event handling, form validation & multi-category scoring matrix.</p>
+        </div>
+        <div class="team-card">
+          <span class="team-role-badge">🚀 Member 4</span>
+          <h4>Recommendations & Details</h4>
+          <p>Recommendation algorithm, career encyclopedia, job role mapping & 4-stage learning roadmaps.</p>
+        </div>
+        <div class="team-card">
+          <span class="team-role-badge">🧪 Member 5</span>
+          <h4>QA Testing & Deployment</h4>
+          <p>Cross-device responsiveness testing, validation checks, bug reporting & production hosting.</p>
+        </div>
+      </div>
+
+      <!-- Contact Us Form -->
+      <div class="contact-grid">
+        <div>
+          <h3 style="font-size: 1.6rem; margin-bottom: 14px;">Get Personalized Guidance</h3>
+          <p style="color: var(--text-muted); margin-bottom: 24px;">
+            Have feedback on our Career Path Selection System or want to connect with a mentor? Fill out the form and our team will respond promptly.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="feature-icon" style="margin-bottom: 0; width: 42px; height: 42px; font-size: 1rem;">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.95rem;">Email Desk</h5>
+                <p style="color: var(--text-muted); font-size: 0.88rem;">support@pathfinderpro.edu</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="feature-icon" style="margin-bottom: 0; width: 42px; height: 42px; font-size: 1rem;">
+                <i class="fa-brands fa-github"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.95rem;">GitHub Repository</h5>
+                <p style="color: var(--text-muted); font-size: 0.88rem;">github.com/team-career-path-system</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="feature-icon" style="margin-bottom: 0; width: 42px; height: 42px; font-size: 1rem;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.95rem;">QA & Deployment Status</h5>
+                <p style="color: var(--success); font-size: 0.88rem; font-weight: 600;">v1.0 Production Verified (All Checks Passing)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form id="contactForm" novalidate>
+          <div class="form-group">
+            <label for="contactName">Full Name *</label>
+            <input type="text" id="contactName" class="form-control" placeholder="Enter your full name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="contactEmail">Student Email Address *</label>
+            <input type="email" id="contactEmail" class="form-control" placeholder="you@university.edu" required />
+          </div>
+
+          <div class="form-group">
+            <label for="contactInterest">Interested Career Track</label>
+            <select id="contactInterest" class="form-control">
+              <option value="Software Development">Software Development</option>
+              <option value="Data Science">Data Science & AI</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="UI/UX Design">UI/UX Design</option>
+              <option value="Business and Management">Business & Management</option>
+              <option value="Digital Marketing">Digital Marketing</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="contactMessage">Your Message or Query *</label>
+            <textarea id="contactMessage" rows="3" class="form-control" placeholder="Ask about skills, roadmaps, or share feedback..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Send Message
+          </button>
+
+          <div class="toast-msg" id="contactSuccessToast">
+            <i class="fa-solid fa-circle-check"></i> Thank you! Your message has been validated and recorded by the system.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p><strong>PathFinder Pro – Career Path Selection System</strong> | Built with HTML5, CSS3 & Vanilla JavaScript</p>
+      <p style="margin-top: 6px; font-size: 0.82rem;">© 2026 Collaborative Team Project (Members 1–5). All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       💻🚀🧪 JAVASCRIPT ENGINE (Questionnaire, Scoring, Recommendations & QA)
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       🚀 MEMBER 4: CAREER DATABASE (6 Career Categories, Details & Roadmaps)
+       ========================================================================== */
+    const CAREER_DATA = {
+      software: {
+        id: 'software',
+        title: 'Software Development',
+        icon: 'fa-solid fa-code',
+        tagline: 'Architect, build, and scale modern web, mobile, and cloud applications.',
+        description: 'Software Developers design, write, test, and maintain code that powers everything from interactive websites and mobile apps to enterprise cloud platforms and operating systems.',
+        qualifications: 'B.Tech / B.E. in CS/IT, BCA, MCA, or strong self-taught portfolio in Data Structures, Algorithms, and Full-Stack Development.',
+        salary: '₹6 LPA – ₹24+ LPA (Entry to Mid-Level)',
+        skills: ['JavaScript / TypeScript', 'React / Node.js', 'Python / Java', 'Git & GitHub', 'SQL & NoSQL Databases', 'Data Structures & Algorithms', 'REST APIs'],
+        roles: [
+          'Full-Stack Web Developer',
+          'Frontend / UI Engineer',
+          'Backend Systems Engineer',
+          'Mobile App Developer (iOS / Android)',
+          'Cloud & DevOps Engineer'
+        ],
+        courses: [
+          'CS50x: Introduction to Computer Science (Harvard)',
+          'Full-Stack Open (University of Helsinki)',
+          'The Odin Project / freeCodeCamp Full-Stack Track'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Programming & Web Basics',
+            items: ['Master HTML5, Semantic CSS3 & Responsive Flexbox/Grid', 'Core JavaScript (ES6+, DOM Manipulation, Async/Await)', 'Git version control & GitHub collaborative workflows']
+          },
+          {
+            phase: 'Phase 2: Core Stack',
+            title: 'Frontend & Backend Engineering',
+            items: ['Frontend Framework: React.js or Vue.js state management', 'Backend runtime: Node.js & Express or Python Django/FastAPI', 'Relational (PostgreSQL) & NoSQL (MongoDB) database design']
+          },
+          {
+            phase: 'Phase 3: Problem Solving',
+            title: 'DSA & System Architecture',
+            items: ['Arrays, Trees, Graphs, Dynamic Programming & Greedy Algorithms', 'Authentication (JWT/OAuth), RESTful APIs & Microservices', 'Unit testing & CI/CD deployment pipelines']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'Production Portfolio & Internships',
+            items: ['Build 3 full-stack deployed capstone applications', 'Contribute to Open Source & participate in hackathons', 'Technical interview preparation & system design drills']
+          }
+        ]
+      },
+
+      datascience: {
+        id: 'datascience',
+        title: 'Data Science & AI',
+        icon: 'fa-solid fa-brain',
+        tagline: 'Extract predictive insights from complex datasets and build intelligent ML models.',
+        description: 'Data Scientists and AI Engineers combine statistics, mathematics, and programming to analyze massive datasets, uncover hidden patterns, and train machine learning models that automate decision-making.',
+        qualifications: 'B.Tech/M.Tech in CS, AI/DS, Mathematics, Statistics, or Economics with strong analytical foundations.',
+        salary: '₹7 LPA – ₹28+ LPA (Entry to Mid-Level)',
+        skills: ['Python & R', 'SQL & Data Warehousing', 'Pandas, NumPy & Matplotlib', 'Machine Learning (Scikit-Learn)', 'Deep Learning (PyTorch / TensorFlow)', 'Probability & Statistics', 'PowerBI / Tableau'],
+        roles: [
+          'Data Scientist',
+          'Machine Learning Engineer',
+          'Data Analyst / Business Intelligence Analyst',
+          'AI Research Engineer (NLP / Computer Vision)',
+          'Data Engineer'
+        ],
+        courses: [
+          'Machine Learning Specialization – Andrew Ng (Coursera)',
+          'Kaggle Micro-Courses (Python, Pandas, Intro to ML)',
+          'IBM Data Science Professional Certificate'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Math, Stats & Python Programming',
+            items: ['Linear Algebra, Calculus, Probability & Inferential Statistics', 'Python programming fundamentals & SQL querying', 'Exploratory Data Analysis (EDA) with Pandas & NumPy']
+          },
+          {
+            phase: 'Phase 2: Visualization & BI',
+            title: 'Data Storytelling & Dashboards',
+            items: ['Data visualization with Matplotlib, Seaborn & Plotly', 'Interactive executive dashboards in PowerBI or Tableau', 'Data cleaning, feature engineering & hypothesis testing']
+          },
+          {
+            phase: 'Phase 3: Machine Learning',
+            title: 'Predictive Modeling & Deep Learning',
+            items: ['Supervised & Unsupervised Learning (Regression, Random Forests, XGBoost)', 'Neural Networks, NLP & Computer Vision with PyTorch', 'Model evaluation metrics & hyperparameter tuning']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'MLOps & Real-World Deployment',
+            items: ['Deploy ML models via FastAPI, Docker & Cloud platforms', 'Compete in Kaggle challenges & publish end-to-end case studies', 'Explore Generative AI & Large Language Model (LLM) APIs']
+          }
+        ]
+      },
+
+      cybersecurity: {
+        id: 'cybersecurity',
+        title: 'Cybersecurity',
+        icon: 'fa-solid fa-shield-halved',
+        tagline: 'Defend networks, cloud infrastructure, and applications against digital threats.',
+        description: 'Cybersecurity Analysts and Ethical Hackers safeguard critical digital assets by identifying vulnerabilities, conducting penetration tests, monitoring threat intelligence, and responding to security incidents.',
+        qualifications: 'Degree in CS/IT/Cybersecurity plus recognized industry certifications (CompTIA Security+, CEH, or OSCP).',
+        salary: '₹5.5 LPA – ₹22+ LPA (Entry to Mid-Level)',
+        skills: ['Network Security & TCP/IP', 'Linux & Bash Scripting', 'Penetration Testing & Ethical Hacking', 'SIEM Tools (Splunk)', 'OWASP Top 10 Web Security', 'Cryptography', 'Incident Response'],
+        roles: [
+          'Cybersecurity Analyst (SOC)',
+          'Penetration Tester / Ethical Hacker',
+          'Cloud Security Engineer',
+          'Information Security Auditor',
+          'Digital Forensics Investigator'
+        ],
+        courses: [
+          'Google Cybersecurity Professional Certificate',
+          'TryHackMe & HackTheBox Interactive Labs',
+          'CompTIA Security+ (SY0-701) Prep Track'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Networking & Operating Systems',
+            items: ['OSI Model, TCP/IP, DNS, HTTP/S & subnetting mastery', 'Linux command line administration & Windows Active Directory', 'Virtualization labs using VirtualBox / VMware & Kali Linux']
+          },
+          {
+            phase: 'Phase 2: Core Security',
+            title: 'Threat Landscape & Defensive Ops',
+            items: ['Cryptography, firewalls, IDS/IPS & endpoint protection', 'Log analysis & Security Information Event Management (SIEM)', 'Python & Bash scripting for security automation']
+          },
+          {
+            phase: 'Phase 3: Offensive & Web Security',
+            title: 'Vulnerability Assessment & Pentesting',
+            items: ['OWASP Top 10 vulnerabilities (SQLi, XSS, CSRF)', 'Reconnaissance & exploitation with Nmap, Burp Suite & Metasploit', 'Cloud security posture management (AWS / Azure)']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'Certifications & CTF Competitions',
+            items: ['Earn CompTIA Security+, eJPT, or Certified Ethical Hacker (CEH)', 'Participate in Capture The Flag (CTF) competitions', 'Document vulnerability write-ups & home SOC lab builds']
+          }
+        ]
+      },
+
+      uiux: {
+        id: 'uiux',
+        title: 'UI/UX Design',
+        icon: 'fa-solid fa-pen-ruler',
+        tagline: 'Craft intuitive, human-centered digital products and seamless visual experiences.',
+        description: 'UI/UX Designers blend psychology, user research, interaction design, and visual aesthetics to ensure digital applications are effortless to navigate, accessible, and delightful to use.',
+        qualifications: 'B.Des, Multimedia/HCI degree, or any background backed by a strong case-study portfolio in Figma.',
+        salary: '₹5 LPA – ₹20+ LPA (Entry to Mid-Level)',
+        skills: ['Figma & Prototyping', 'User Research & Personas', 'Wireframing & Information Architecture', 'Design Systems & Component Libraries', 'Usability Testing', 'Visual Hierarchy & Typography', 'HTML/CSS Awareness'],
+        roles: [
+          'Product Designer (UI/UX)',
+          'UX Researcher',
+          'Interaction Designer',
+          'Visual & Design Systems Specialist',
+          'Frontend UI Designer'
+        ],
+        courses: [
+          'Google UX Design Professional Certificate',
+          'Interaction Design Foundation (IxDF) Bootcamps',
+          'Figma Advanced Auto-Layout & Design Systems Masterclass'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Design Principles & UX Psychology',
+            items: ['Color theory, typography, grid systems & visual hierarchy', 'Heuristics evaluation (Jakob Nielsen’s 10 usability principles)', 'Empathy mapping, user personas & user journey workflows']
+          },
+          {
+            phase: 'Phase 2: Tooling Mastery',
+            title: 'Wireframing & Figma Prototyping',
+            items: ['Low-fidelity sketching & information architecture sitemaps', 'Figma mastery: Auto-layout, variables, components & variants', 'Interactive high-fidelity clickable prototypes & micro-interactions']
+          },
+          {
+            phase: 'Phase 3: Validation & Systems',
+            title: 'Usability Testing & Accessibility',
+            items: ['Conducting moderated usability tests & A/B experiments', 'WCAG Accessibility standards (contrast, screen-reader flow)', 'Building scalable multi-platform Design Systems']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'Case Studies & Developer Handoff',
+            items: ['Publish 3 detailed UX Case Studies on Behance / Notion / Portfolio', 'Collaborate with developers using Figma Dev Mode & CSS tokens', 'Practice whiteboard product design challenges']
+          }
+        ]
+      },
+
+      business: {
+        id: 'business',
+        title: 'Business & Management',
+        icon: 'fa-solid fa-briefcase',
+        tagline: 'Lead cross-functional teams, drive product strategy, and scale organizational growth.',
+        description: 'Business Analysts, Product Managers, and Project Leaders bridge technology and customer needs. They define product roadmaps, analyze market opportunities, and coordinate engineering and design teams.',
+        qualifications: 'BBA, MBA, B.Tech + Management minor, or analytical problem-solvers with strong communication skills.',
+        salary: '₹6 LPA – ₹25+ LPA (Entry to Mid-Level)',
+        skills: ['Product Management & Agile/Scrum', 'Business Requirements Analysis', 'Financial Modeling & Excel', 'Market & Competitive Research', 'Stakeholder Communication', 'Jira / Notion / Confluence', 'SQL & KPI Metrics'],
+        roles: [
+          'Associate Product Manager (APM)',
+          'Business Analyst',
+          'Agile Project Manager / Scrum Master',
+          'Management Consultant',
+          'Operations & Strategy Specialist'
+        ],
+        courses: [
+          'Google Project Management Professional Certificate',
+          'Product Management Fundamentals (University of Virginia)',
+          'Business Analytics with Excel & SQL (Wharton / Coursera)'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Business Strategy & Market Analysis',
+            items: ['SWOT, Porter’s Five Forces & unit economics fundamentals', 'Advanced Microsoft Excel, financial modeling & KPI tracking', 'Structured communication & executive presentation skills']
+          },
+          {
+            phase: 'Phase 2: Product & Agile',
+            title: 'Agile Execution & Requirements',
+            items: ['Agile frameworks: Scrum, Kanban, sprint planning & retrospectives', 'Writing PRDs (Product Requirement Documents) & user stories', 'Workflow tools: Jira, Trello, Confluence & Notion']
+          },
+          {
+            phase: 'Phase 3: Data-Driven Decisions',
+            title: 'Product Analytics & Growth',
+            items: ['Funnel analysis, cohort retention, A/B testing & North Star metrics', 'Basic SQL & BI dashboards for self-serve data insights', 'Customer discovery interviews & prioritization (RICE framework)']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'Product Teardowns & Case Prep',
+            items: ['Create 3 comprehensive Product Teardown decks (e.g., UPI, Swiggy, Spotify)', 'Earn CAPM, CSM (Certified Scrum Master), or APM credentials', 'Practice root-cause analysis & guesstimate case interviews']
+          }
+        ]
+      },
+
+      marketing: {
+        id: 'marketing',
+        title: 'Digital Marketing',
+        icon: 'fa-solid fa-bullhorn',
+        tagline: 'Acquire users, build brand authority, and optimize conversion funnels using data.',
+        description: 'Digital Marketers and Growth Specialists combine creative storytelling with performance analytics—mastering SEO, paid acquisition, social media strategy, and conversion rate optimization.',
+        qualifications: 'Any bachelor’s degree (BBA, Mass Comm, Commerce, or Tech) paired with hands-on campaign analytics experience.',
+        salary: '₹4.5 LPA – ₹18+ LPA (Entry to Mid-Level)',
+        skills: ['Search Engine Optimization (SEO)', 'Google Ads & Meta Ads (SEM/PPC)', 'Google Analytics 4 (GA4)', 'Content Strategy & Copywriting', 'Email & CRM Automation', 'Conversion Rate Optimization (CRO)', 'Social Media Analytics'],
+        roles: [
+          'Digital Marketing Specialist',
+          'Performance / Growth Marketer',
+          'SEO & Content Strategist',
+          'Social Media & Brand Manager',
+          'Marketing Analytics Manager'
+        ],
+        courses: [
+          'Google Digital Marketing & E-commerce Certificate',
+          'HubSpot Inbound Marketing & Content Certification',
+          'Google Analytics 4 (GA4) & Google Ads Skillshop'
+        ],
+        roadmap: [
+          {
+            phase: 'Phase 1: Foundations',
+            title: 'Marketing Funnels & Copywriting',
+            items: ['Consumer psychology, buyer personas & AIDA marketing funnel', 'High-converting copywriting & brand storytelling principles', 'Content creation workflows using Canva & video tools']
+          },
+          {
+            phase: 'Phase 2: Organic Growth',
+            title: 'SEO & Content Ecosystems',
+            items: ['On-page, off-page & technical SEO (Ahrefs, SEMrush, Search Console)', 'Keyword research, content clusters & blog optimization', 'Organic social media growth & community building']
+          },
+          {
+            phase: 'Phase 3: Paid Acquisition & Analytics',
+            title: 'Performance Ads & GA4 Tracking',
+            items: ['Paid search & display campaigns with Google Ads', 'Meta Ads Manager, retargeting pixels & ROAS optimization', 'Funnel tracking with Google Analytics 4 (GA4) & Tag Manager']
+          },
+          {
+            phase: 'Phase 4: Industry Readiness',
+            title: 'Live Campaigns & Growth Portfolio',
+            items: ['Grow a real niche website, newsletter, or student brand from scratch', 'Master email marketing automation (Mailchimp / HubSpot)', 'Document ROI metrics & campaign case studies for employers']
+          }
+        ]
+      }
+    };
+
+    /* ==========================================================================
+       💻 MEMBER 3: QUESTIONNAIRE BANK (Interests, Skills, Subjects, Preferences)
+       ========================================================================== */
+    const QUESTIONS = [
+      {
+        id: 'q1',
+        question: 'Which daily activity sounds most exciting and fulfilling to you?',
+        options: [
+          { text: 'Writing code to build interactive apps and automate tasks', weights: { software: 3, datascience: 1 } },
+          { text: 'Analyzing patterns in data and training AI models', weights: { datascience: 3, business: 1 } },
+          { text: 'Finding security loopholes and protecting networks from hackers', weights: { cybersecurity: 3, software: 1 } },
+          { text: 'Designing clean interfaces, wireframes, and user experiences', weights: { uiux: 3, marketing: 1 } },
+          { text: 'Leading a team, planning product strategy, and solving business problems', weights: { business: 3, marketing: 1 } },
+          { text: 'Creating viral campaigns, optimizing SEO, and growing online brands', weights: { marketing: 3, business: 1 } }
+        ]
+      },
+      {
+        id: 'q2',
+        question: 'Which academic subject or knowledge area do you enjoy the most?',
+        options: [
+          { text: 'Computer Programming, Logic & Algorithms', weights: { software: 3, cybersecurity: 1 } },
+          { text: 'Mathematics, Probability & Statistics', weights: { datascience: 3, software: 1 } },
+          { text: 'Computer Networks, Operating Systems & Cryptography', weights: { cybersecurity: 3 } },
+          { text: 'Visual Arts, Psychology & Human-Computer Interaction', weights: { uiux: 3, marketing: 1 } },
+          { text: 'Economics, Management & Entrepreneurship', weights: { business: 3 } },
+          { text: 'Media Studies, Communication & Consumer Behavior', weights: { marketing: 3, uiux: 1 } }
+        ]
+      },
+      {
+        id: 'q3',
+        question: 'What is your strongest natural skill when working on a college project?',
+        options: [
+          { text: 'Turning ideas into working software or functional prototypes', weights: { software: 3 } },
+          { text: 'Working with spreadsheets, numbers, and charts to prove a point', weights: { datascience: 3, business: 1 } },
+          { text: 'Troubleshooting technical bugs, system errors, and edge cases', weights: { cybersecurity: 3, software: 1 } },
+          { text: 'Making the presentation, layout, and user flow look polished', weights: { uiux: 3 } },
+          { text: 'Coordinating teammates, managing deadlines, and pitching the vision', weights: { business: 3 } },
+          { text: 'Promoting the project, writing compelling copy, and engaging audiences', weights: { marketing: 3 } }
+        ]
+      },
+      {
+        id: 'q4',
+        question: 'Which toolkit would you be most excited to master over the next 6 months?',
+        options: [
+          { text: 'VS Code, React, Node.js, Git & Cloud APIs', weights: { software: 3 } },
+          { text: 'Python, Jupyter Notebooks, SQL, Pandas & Machine Learning', weights: { datascience: 3 } },
+          { text: 'Kali Linux, Wireshark, Burp Suite & Network Firewalls', weights: { cybersecurity: 3 } },
+          { text: 'Figma, Prototyping Systems, Wireframes & Usability Testing', weights: { uiux: 3 } },
+          { text: 'Jira, Notion, Financial Models & Product Roadmaps', weights: { business: 3 } },
+          { text: 'Google Analytics, SEO Suites, Meta/Google Ads & Canva', weights: { marketing: 3 } }
+        ]
+      },
+      {
+        id: 'q5',
+        question: 'When solving a complex problem, what is your preferred approach?',
+        options: [
+          { text: 'Break it down into modular functions and write clean logical rules', weights: { software: 3, datascience: 1 } },
+          { text: 'Gather historical data, run experiments, and measure probabilities', weights: { datascience: 3 } },
+          { text: 'Think like an attacker to anticipate where the system might fail', weights: { cybersecurity: 3 } },
+          { text: 'Interview users to understand their pain points and sketch solutions', weights: { uiux: 3, business: 1 } },
+          { text: 'Align stakeholders, evaluate cost vs. impact, and prioritize tasks', weights: { business: 3 } },
+          { text: 'Test different messaging hooks and analyze audience engagement', weights: { marketing: 3 } }
+        ]
+      },
+      {
+        id: 'q6',
+        question: 'What kind of career impact motivates you the most?',
+        options: [
+          { text: 'Shipping software products used by thousands of people daily', weights: { software: 3 } },
+          { text: 'Discovering AI-driven insights that transform decision-making', weights: { datascience: 3 } },
+          { text: 'Protecting organizations and citizens from cybercrime and data breaches', weights: { cybersecurity: 3 } },
+          { text: 'Making complex technology simple, accessible, and joyful to use', weights: { uiux: 3 } },
+          { text: 'Steering high-growth products and leading successful business ventures', weights: { business: 3 } },
+          { text: 'Scaling brand visibility, revenue, and digital communities globally', weights: { marketing: 3 } }
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       💻 MEMBER 3: RENDER QUESTIONNAIRE & HANDLE VALIDATION / PROGRESS
+       ========================================================================== */
+    const questionsContainer = document.getElementById('questionsContainer');
+    const progressText = document.getElementById('progressText');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const quizErrorBanner = document.getElementById('quizErrorBanner');
+    const careerQuizForm = document.getElementById('careerQuizForm');
+
+    function renderQuestions() {
+      questionsContainer.innerHTML = QUESTIONS.map((q, qIndex) => `
+        <div class="question-block" id="block-${q.id}">
+          <div class="question-header">
+            <span class="q-number">Q${qIndex + 1}</span>
+            <div class="question-title">${q.question}</div>
+          </div>
+          <div class="options-grid">
+            ${q.options.map((opt, oIndex) => `
+              <label class="option-label" id="label-${q.id}-${oIndex}">
+                <input
+                  type="radio"
+                  name="${q.id}"
+                  value="${oIndex}"
+                  onchange="handleOptionSelect('${q.id}', ${oIndex})"
+                />
+                <span>${opt.text}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.handleOptionSelect = function(questionId, optionIndex) {
+      // Highlight selected option card
+      const block = document.getElementById(`block-${questionId}`);
+      block.classList.remove('unanswered-error');
+
+      const labels = block.querySelectorAll('.option-label');
+      labels.forEach(l => l.classList.remove('selected'));
+
+      const activeLabel = document.getElementById(`label-${questionId}-${optionIndex}`);
+      if (activeLabel) activeLabel.classList.add('selected');
+
+      updateQuizProgress();
+    };
+
+    function updateQuizProgress() {
+      let answeredCount = 0;
+      QUESTIONS.forEach(q => {
+        const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+        if (checked) answeredCount++;
+      });
+
+      const pct = Math.round((answeredCount / QUESTIONS.length) * 100);
+      progressText.textContent = `${answeredCount} of ${QUESTIONS.length} Questions Answered (${pct}%)`;
+      progressBarFill.style.width = `${pct}%`;
+
+      if (answeredCount === QUESTIONS.length) {
+        quizErrorBanner.style.display = 'none';
+      }
+    }
+
+    // Demo Auto-Fill Button (Helpful for Member 5 Testing & Live Demos)
+    document.getElementById('demoFillBtn').addEventListener('click', () => {
+      const sampleChoices = [0, 0, 0, 0, 1, 0]; // Leaning Software + Data Science
+      QUESTIONS.forEach((q, idx) => {
+        const radio = document.querySelector(`input[name="${q.id}"][value="${sampleChoices[idx]}"]`);
+        if (radio) {
+          radio.checked = true;
+          handleOptionSelect(q.id, sampleChoices[idx]);
+        }
+      });
+      calculateAndRenderRecommendations();
+      document.getElementById('recommendations').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Reset Questionnaire Button
+    document.getElementById('resetQuizBtn').addEventListener('click', () => {
+      careerQuizForm.reset();
+      document.querySelectorAll('.option-label').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.question-block').forEach(el => el.classList.remove('unanswered-error'));
+      quizErrorBanner.style.display = 'none';
+      updateQuizProgress();
+    });
+
+    // Form Submission & Validation
+    careerQuizForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let allValid = true;
+      let firstUnansweredEl = null;
+
+      QUESTIONS.forEach(q => {
+        const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+        const block = document.getElementById(`block-${q.id}`);
+        if (!checked) {
+          allValid = false;
+          block.classList.add('unanswered-error');
+          if (!firstUnansweredEl) firstUnansweredEl = block;
+        } else {
+          block.classList.remove('unanswered-error');
+        }
+      });
+
+      if (!allValid) {
+        quizErrorBanner.style.display = 'flex';
+        firstUnansweredEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      quizErrorBanner.style.display = 'none';
+      calculateAndRenderRecommendations();
+      document.getElementById('recommendations').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    /* ==========================================================================
+       🚀 MEMBER 4: SCORING ALGORITHM & RECOMMENDATION RENDERER
+       ========================================================================== */
+    function calculateAndRenderRecommendations(useDefaultSample = false) {
+      const rawScores = {
+        software: 0,
+        datascience: 0,
+        cybersecurity: 0,
+        uiux: 0,
+        business: 0,
+        marketing: 0
+      };
+
+      if (useDefaultSample) {
+        // Initial default state before user submits quiz
+        rawScores.software = 16;
+        rawScores.datascience = 13;
+        rawScores.uiux = 10;
+        rawScores.cybersecurity = 9;
+        rawScores.business = 7;
+        rawScores.marketing = 6;
+      } else {
+        QUESTIONS.forEach(q => {
+          const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+          if (checked) {
+            const optionIdx = parseInt(checked.value, 10);
+            const weights = q.options[optionIdx].weights;
+            Object.keys(weights).forEach(careerKey => {
+              rawScores[careerKey] += weights[careerKey];
+            });
+          }
+        });
+      }
+
+      // Sort careers by score descending
+      const maxPossible = QUESTIONS.length * 3; // 18 points max
+      const sortedCareers = Object.keys(rawScores)
+        .map(key => {
+          const pct = Math.min(98, Math.max(38, Math.round((rawScores[key] / maxPossible) * 100) + 25));
+          return {
+            ...CAREER_DATA[key],
+            rawScore: rawScores[key],
+            matchPct: useDefaultSample ? (key === 'software' ? 94 : pct) : pct
+          };
+        })
+        .sort((a, b) => b.rawScore - a.rawScore);
+
+      const topCareer = sortedCareers[0];
+      const secondCareer = sortedCareers[1];
+      const thirdCareer = sortedCareers[2];
+
+      const recContainer = document.getElementById('recommendationOutput');
+      recContainer.innerHTML = `
+        <div class="rec-grid">
+          <div class="top-match-card">
+            <span class="match-pill">
+              <i class="fa-solid fa-star"></i> ${topCareer.matchPct}% PRIMARY CAREER MATCH
+            </span>
+            <h3 class="top-match-title">
+              <i class="${topCareer.icon}" style="color: var(--accent-secondary); margin-right: 8px;"></i>
+              ${topCareer.title}
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+              ${topCareer.description}
+            </p>
+
+            <h5 style="font-size: 0.88rem; text-transform: uppercase; color: var(--accent-secondary); letter-spacing: 0.05em;">
+              Key Skills You Will Master:
+            </h5>
+            <div class="tag-list">
+              ${topCareer.skills.slice(0, 5).map(s => `<span class="tag">${s}</span>`).join('')}
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.65); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 22px;">
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">
+                <strong>Runner-Up Matches:</strong>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
+                <span>2. <strong>${secondCareer.title}</strong> (${secondCareer.matchPct}%)</span>
+                <span>•</span>
+                <span>3. <strong>${thirdCareer.title}</strong> (${thirdCareer.matchPct}%)</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+              <button class="btn btn-primary btn-sm" onclick="selectCareerTab('${topCareer.id}', true)">
+                <i class="fa-solid fa-book-open"></i> View Full Career Details
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="selectRoadmapTab('${topCareer.id}', true)">
+                <i class="fa-solid fa-route"></i> View Learning Roadmap
+              </button>
+            </div>
+          </div>
+
+          <div class="score-breakdown-card">
+            <h4 style="margin-bottom: 18px; font-size: 1.15rem;">
+              <i class="fa-solid fa-chart-bar" style="color: var(--accent-primary); margin-right: 8px;"></i>
+              Domain Affinity Breakdown
+            </h4>
+            ${sortedCareers.map(c => `
+              <div class="score-row">
+                <div class="score-row-header">
+                  <span><i class="${c.icon}" style="margin-right: 6px; color: var(--accent-secondary);"></i> ${c.title}</span>
+                  <span style="color: var(--accent-secondary); font-weight: 700;">${c.matchPct}%</span>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: ${c.matchPct}%;"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Also sync active Career Details & Roadmap tabs to the recommended career
+      selectCareerTab(topCareer.id, false);
+      selectRoadmapTab(topCareer.id, false);
+    }
+
+    /* ==========================================================================
+       🚀 MEMBER 4: CAREER DETAILS & ROADMAP INTERACTIVE TABS
+       ========================================================================== */
+    function renderCareerTabs() {
+      const detailTabsEl = document.getElementById('careerDetailTabs');
+      const roadmapTabsEl = document.getElementById('roadmapTabs');
+
+      const buttonsHtml = Object.values(CAREER_DATA).map(c => `
+        <button class="tab-btn" data-career="${c.id}" onclick="selectCareerTab('${c.id}', false)">
+          <i class="${c.icon}"></i> ${c.title}
+        </button>
+      `).join('');
+
+      const roadmapButtonsHtml = Object.values(CAREER_DATA).map(c => `
+        <button class="tab-btn" data-roadmap="${c.id}" onclick="selectRoadmapTab('${c.id}', false)">
+          <i class="${c.icon}"></i> ${c.title}
+        </button>
+      `).join('');
+
+      detailTabsEl.innerHTML = buttonsHtml;
+      roadmapTabsEl.innerHTML = roadmapButtonsHtml;
+    }
+
+    window.selectCareerTab = function(careerId, shouldScroll) {
+      const career = CAREER_DATA[careerId];
+      if (!career) return;
+
+      // Update active button state
+      document.querySelectorAll('[data-career]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-career') === careerId);
+      });
+
+      // Render Career Details Content
+      const contentEl = document.getElementById('careerDetailContent');
+      contentEl.innerHTML = `
+        <div>
+          <span class="section-badge" style="margin-bottom: 10px;">
+            <i class="${career.icon}"></i> ${career.title}
+          </span>
+          <h3 style="font-size: 1.85rem; margin-bottom: 10px;">${career.tagline}</h3>
+          <p style="color: var(--text-muted); margin-bottom: 22px;">${career.description}</p>
+
+          <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--accent-secondary);">
+            <i class="fa-solid fa-graduation-cap"></i> Required Qualifications
+          </h4>
+          <p style="color: var(--text-muted); font-size: 0.94rem; margin-bottom: 20px;">
+            ${career.qualifications}
+          </p>
+
+          <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--accent-secondary);">
+            <i class="fa-solid fa-screwdriver-wrench"></i> Core Technical & Domain Skills
+          </h4>
+          <div class="tag-list">
+            ${career.skills.map(skill => `<span class="tag">${skill}</span>`).join('')}
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button class="btn btn-primary btn-sm" onclick="selectRoadmapTab('${career.id}', true)">
+              <i class="fa-solid fa-map"></i> Explore ${career.title} Learning Roadmap
+            </button>
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.7); padding: 26px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h4 style="font-size: 1.12rem; margin-bottom: 14px;">
+            <i class="fa-solid fa-user-tie" style="color: var(--accent-primary); margin-right: 6px;"></i>
+            High-Demand Job Roles
+          </h4>
+          <ul class="role-list">
+            ${career.roles.map(role => `
+              <li><i class="fa-solid fa-circle-check"></i> ${role}</li>
+            `).join('')}
+          </ul>
+
+          <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <span style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">Estimated Compensation Range</span>
+            <h4 style="font-size: 1.35rem; color: var(--success); margin-top: 4px;">${career.salary}</h4>
+          </div>
+        </div>
+      `;
+
+      if (shouldScroll) {
+        document.getElementById('details').scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    window.selectRoadmapTab = function(careerId, shouldScroll) {
+      const career = CAREER_DATA[careerId];
+      if (!career) return;
+
+      document.querySelectorAll('[data-roadmap]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-roadmap') === careerId);
+      });
+
+      const roadmapEl = document.getElementById('roadmapContent');
+      roadmapEl.innerHTML = `
+        <div class="roadmap-grid">
+          ${career.roadmap.map(step => `
+            <div class="roadmap-step">
+              <span class="step-number">${step.phase}</span>
+              <h4>${step.title}</h4>
+              <ul>
+                ${step.items.map(item => `
+                  <li><i class="fa-solid fa-check"></i> <span>${item}</span></li>
+                `).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-top: 28px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+          <div>
+            <h4 style="font-size: 1.1rem; margin-bottom: 8px;">
+              <i class="fa-solid fa-certificate" style="color: var(--warning); margin-right: 8px;"></i>
+              Suggested Courses & Certifications for ${career.title}
+            </h4>
+            <ul style="color: var(--text-muted); font-size: 0.92rem; display: flex; flex-wrap: wrap; gap: 18px;">
+              ${career.courses.map(c => `<li>• ${c}</li>`).join('')}
+            </ul>
+          </div>
+          <a href="#assessment" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-rotate"></i> Retake Assessment
+          </a>
+        </div>
+      `;
+
+      if (shouldScroll) {
+        document.getElementById('roadmap').scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    /* ==========================================================================
+       👑 MEMBER 1 & 🧪 MEMBER 5: NAVIGATION & CONTACT FORM QA VALIDATION
+       ========================================================================== */
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // Contact Form Validation
+    const contactForm = document.getElementById('contactForm');
+    const contactSuccessToast = document.getElementById('contactSuccessToast');
+
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const msg = document.getElementById('contactMessage').value.trim();
+
+      if (!name || !email || !email.includes('@') || !msg) {
+        alert('Please fill out a valid Name, Email Address, and Message.');
+        return;
+      }
+
+      contactSuccessToast.style.display = 'block';
+      contactForm.reset();
+      setTimeout(() => {
+        contactSuccessToast.style.display = 'none';
+      }, 5000);
+    });
+
+    /* ==========================================================================
+       👑 MEMBER 1: INITIALIZE COMPLETE APPLICATION ON LOAD
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      renderCareerTabs();
+      calculateAndRenderRecommendations(true); // Load initial preview state
+    });
+  </script>
+</body>
+</html>
